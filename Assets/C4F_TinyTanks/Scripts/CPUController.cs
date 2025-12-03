@@ -15,16 +15,20 @@ namespace Code4Fun.TinyTanks
         [SerializeField] private int    _rpm        = 100;
 
         private Coroutine _shootRoutine;
+        private HP _target;
 
         private void Start() { _agent = GetComponent<NavMeshAgent>(); }
 
         private void Update()
         {
-            if (!_turret) return;
-            if (!_shoot ) return;
+            if (!_turret)          return;
+            if (!_shoot )          return;
+            
+            Move();
+
+            if (!HasFoundTarget()) return;
 
             Fire();
-            Move();
             Aim();
         }
 
@@ -43,6 +47,23 @@ namespace Code4Fun.TinyTanks
             _shoot.Fire();
             yield return new WaitForSeconds(SecondsPerRound());
             _shootRoutine = null; // Finishes the routine so the CPU can shoot again.
+        }
+
+        private bool HasFoundTarget()
+        {
+            if (_target && !_target.IsEmpty()) return true;
+
+            Collider[] nearbyEnemies = Physics.OverlapSphere(transform.position,
+                                                             50.0f
+                                                            );
+            foreach (Collider enemy in nearbyEnemies)
+            {
+                _target = enemy.GetComponent<HP>();
+                if (!_target) continue;
+                return true;
+            }
+
+            return false;
         }
     }
 }
