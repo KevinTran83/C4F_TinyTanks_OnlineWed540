@@ -38,8 +38,14 @@ namespace Code4Fun.TinyTanks
 
             _shootRoutine = StartCoroutine("DoShoot");
         } 
-        private void Move() { } 
-        private void Aim() { } 
+        private void Move()
+        {
+            Vector3 dest = transform.position + Random.insideUnitSphere * _moveRange;
+            if ( _agent.remainingDistance <= 0.05f
+              && NavMesh.SamplePosition(dest, out NavMeshHit hit, 1, NavMesh.AllAreas)
+               ) _agent.SetDestination(hit.position);
+        } 
+        private void Aim() { _turret.Turn(_target.transform.position); } 
 
         private float SecondsPerRound() { return 60.0f / _rpm; }
         private IEnumerator DoShoot()
@@ -58,6 +64,7 @@ namespace Code4Fun.TinyTanks
                                                             );
             foreach (Collider enemy in nearbyEnemies)
             {
+                if (enemy.gameObject == gameObject) continue;
                 _target = enemy.GetComponent<HP>();
                 if (!_target) continue;
                 return true;
