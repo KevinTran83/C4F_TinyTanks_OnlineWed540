@@ -11,6 +11,8 @@ namespace Code4Fun.TinyTanks
 
         [SerializeField] private UnityEvent _onDeath;
 
+        private bool _hasDiedOnce = false;
+
         private void Start()
         {
             _remainingHP = _maxHP;
@@ -20,7 +22,9 @@ namespace Code4Fun.TinyTanks
         {
             _remainingHP -= amount;
             if (_remainingHP <= 0)   { _remainingHP = 0;
+                                       if (_hasDiedOnce) return;
                                        _onDeath.Invoke();
+                                       _hasDiedOnce=true;
                                      }
             if (_remainingHP > _maxHP) _remainingHP = _maxHP;
         }

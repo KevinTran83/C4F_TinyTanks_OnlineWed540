@@ -7,7 +7,12 @@ namespace Code4Fun.TinyTanks
         [SerializeField] private GameObject _proj;
         [SerializeField] private Transform  _muzzle;
 
-        public void Fire() { Instantiate(_proj, _muzzle.position, _muzzle.rotation);
+        private bool _canShoot = true;
+
+        public void Fire() { if (!_canShoot) return;
+                             Instantiate(_proj, _muzzle.position, _muzzle.rotation);
                            }
+
+        public void HoldFire() { _canShoot = false; }
     }
 }
